@@ -1,0 +1,13 @@
+import gensim.downloader as api
+
+model = api.load("word2vec-google-news-300")
+
+print(model.similarity("king", "queen"))
+
+result = model.most_similar(positive=["king","woman"], negative=["man"], topn=1)
+print(f"'king'-'man'+'queen' = {result[0][0]}(similarity:{result[0][1]:.4f})")
+print(result)
+
+print(model.most_similar("Paris", topn=5))
+
+print(model.doesnt_match(["breakfast","lunch","dinner","banana"]))
