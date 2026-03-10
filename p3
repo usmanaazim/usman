@@ -1,0 +1,70 @@
+!pip install gensim nltk matplotlib seaborn scikit-learn -q
+
+import nltk
+import gensim
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+from nltk.corpus import reuters
+from gensim.models import Word2Vec
+from sklearn.manifold import TSNE
+
+nltk.download('punkt')
+nltk.download('reuters')
+nltk.download('punkt_tab') # Added to resolve LookupError
+
+corpus = reuters.sents()[:5000]
+
+medical_sentences = [[word.lower() for word in sent if word.isalpha()] for sent in corpus]
+
+model = Word2Vec(
+    sentences=medical_sentences,
+    vector_size=100,
+    window=5,
+    min_count=2,
+    workers=4
+)
+
+model.save("medical_word2vec.model")
+model = Word2Vec.load("medical_word2vec.model")
+
+medical_term = "disease"
+
+if medical_term in model.wv:
+    print("Top 5 similar words:")
+    print(model.wv.most_similar(medical_term, topn=5))
+else:
+    print("Word not in vocabulary")
+
+selected_words = [
+    "health","disease","doctor","patient","treatment",
+    "medicine","virus","surgery","nurse","hospital"
+]
+
+word_vectors = []
+labels = []
+
+for word in selected_words:
+    if word in model.wv:
+        word_vectors.append(model.wv[word])
+        labels.append(word)
+
+word_vectors = np.array(word_vectors)
+
+tsne = TSNE(n_components=2, random_state=42, perplexity=3)
+word_vectors_2d = tsne.fit_transform(word_vectors)
+
+plt.figure(figsize=(10,6))
+sns.scatterplot(x=word_vectors_2d[:,0], y=word_vectors_2d[:,1], s=100)
+
+for i, word in enumerate(labels):
+    plt.annotate(word, (word_vectors_2d[i,0], word_vectors_2d[i,1]),
+                 fontsize=12, bbox=dict(facecolor='white', alpha=0.7))
+
+plt.title("t-SNE Visualization of Medical Word Embeddings", fontsize=14)
+plt.xlabel("t-SNE Dimension 1")
+plt.ylabel("t-SNE Dimension 2")
+plt.grid(True, linestyle="--", alpha=0.5)
+
+plt.show()
