@@ -1,0 +1,10 @@
+#include <LPC214x.h>
+unsigned short arr[5] = {1000,2000,3000,4000,5000};
+unsigned int sum = 0;
+int main()
+{
+int i;
+for(i = 0; i < 5; i++)
+sum += arr[i];
+while(1);
+}
