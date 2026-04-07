@@ -1,0 +1,52 @@
+#include <LPC214x.h>
+unsigned int seq_cw[4] = {0x90, 0xC0, 0x60, 0x30};
+unsigned int seq_ccw[4] = {0x30, 0x60, 0xC0, 0x90};
+void delay(void)
+{
+int i, j;
+for(i = 0; i < 200; i++)
+for(j = 0; j < 5000; j++);
+}
+void UART0_Init(void)
+{
+VPBDIV = 0x01; 
+PINSEL0 = 0x00000005;
+U0LCR = 0x83; 
+U0DLL = 78; 
+U0DLM = 0;
+U0LCR = 0x03; 
+}
+{
+void UART0_TxChar(char ch)
+while(!(U0LSR & 0x20));
+U0THR = ch;
+}
+{
+void UART0_TxString(char *str)
+while(*str)
+UART0_TxChar(*str++);
+}
+
+int main(void)
+{
+int i;
+UART0_Init();
+IO0DIR |= 0x000000F0; 
+while(1)
+{
+UART0_TxString("CLOCKWISE\r\n");
+for(i = 0; i < 4; i++)
+{
+IO0CLR = 0xF0;
+IO0SET = seq_cw[i];
+delay();
+}
+UART0_TxString("ANTICLOCKWISE\r\n");
+for(i = 0; i < 4; i++)
+{
+IO0CLR = 0xF0;
+IO0SET = seq_ccw[i];
+delay();
+}
+}
+}
