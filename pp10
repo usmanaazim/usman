@@ -1,0 +1,28 @@
+#include <LPC214x.h>
+void UART0_Init(void)
+{
+VPBDIV = 0x01; 
+PINSEL0 = 0x00000005; 
+U0LCR = 0x83; 
+U0DLL = 78; 
+U0DLM = 0;
+U0LCR = 0x03; 
+}
+{
+void UART0_Send(char ch)
+while(!(U0LSR & 0x20));
+U0THR = ch;
+}
+{
+int main(void)
+int i; 
+UART0_Init();
+while(1)
+{
+UART0_Send('O');
+UART0_Send('K');
+UART0_Send('\r');
+UART0_Send('\n');
+for(i=0; i<5000000; i++); // Now valid
+}
+}
