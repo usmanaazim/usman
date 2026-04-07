@@ -1,0 +1,11 @@
+#include <LPC214x.h>
+unsigned long fact; 
+int main()
+{
+int n = 5;
+unsigned long i;
+fact = 1;
+for(i = 1; i <= n; i++)
+fact *= i;
+while(1);
+}
