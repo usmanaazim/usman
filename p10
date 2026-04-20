@@ -1,0 +1,74 @@
+!pip install -q fastapi uvicorn nest_asyncio gradio requests
+
+from fastapi import FastAPI, Body
+import nest_asyncio, uvicorn, threading, requests
+import gradio as gr
+
+nest_asyncio.apply()
+
+app = FastAPI()
+codes = []
+
+@app.get("/")
+def home():
+    return {
+        "info": "Indian Penal Code",
+        "queries": ["0: Theft", "1: Bribery", "2: Total sections"]
+    }
+
+@app.post("/ipc")
+def add(fapi: dict = Body(...)):
+    codes.append(fapi)
+    return {
+        "Details": {
+            "IPC": fapi.get("IPC"),
+            "case": fapi.get("case"),
+            "punishment": fapi.get("punishment")
+        }
+    }
+
+@app.get("/ipc/{i}")
+def get_code(i: int):
+    if 0 <= i < len(codes):
+        return codes[i]
+    return {"error": "Invalid index"}
+
+def run_api():
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+
+threading.Thread(target=run_api, daemon=True).start()
+
+with gr.Blocks() as demo:
+    gr.Markdown("# IPC Chatbot")
+
+    output = gr.Textbox(label="Output")
+
+    gr.Button("Show Info").click(
+        lambda: requests.get("http://127.0.0.1:8000/").json(),
+        outputs=output
+    )
+
+    with gr.Row():
+        ipc = gr.Textbox(label="IPC")
+        case = gr.Textbox(label="Case")
+        punishment = gr.Textbox(label="Punishment")
+
+    gr.Button("Add IPC").click(
+        lambda i, c, p: requests.post(
+            "http://127.0.0.1:8000/ipc",
+            json={"IPC": i, "case": c, "punishment": p}
+        ).json(),
+        inputs=[ipc, case, punishment],
+        outputs=output
+    )
+
+    idx = gr.Number(label="Index")
+
+    gr.Button("Get IPC").click(
+        lambda i: requests.get(f"http://127.0.0.1:8000/ipc/{int(i)}").json(),
+        inputs=idx,
+        outputs=output
+    )
+
+# Launch UI
+demo.launch(share=True)
