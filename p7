@@ -1,10 +1,17 @@
+!pip uninstall -y transformers
+!pip install transformers==4.41.2
+
 from transformers import pipeline
 
 summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
 
 def summarize_text(text, max_length=130, min_length=50):
-    summary = summarizer(text, max_length=max_length,
-min_length=min_length, do_sample=False)
+    summary = summarizer(
+        text,
+        max_length=max_length,
+        min_length=min_length,
+        do_sample=False
+    )
     return summary[0]["summary_text"]
 
 long_text = """
@@ -22,7 +29,5 @@ medical diagnostics.
 
 summary = summarize_text(long_text)
 
-print("Original Text:")
-print(long_text)
-print("\nSummarized Text:")
-print(summary)
+print("Original Text:\n", long_text)
+print("\nSummarized Text:\n", summary)
