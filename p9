@@ -12,7 +12,7 @@ class InstitutionDetails(BaseModel):
 
 def fetch_institution_details(institution_name: str) -> \
 InstitutionDetails:
-    # Define a user-agent as per Wikipedia's policy
+
     user_agent = "MyJupyterNotebook/1.0 (contact: myemail@example.com)"
     wiki_wiki = wikipediaapi.Wikipedia(user_agent=user_agent,
 language='en')
@@ -20,14 +20,14 @@ language='en')
     if not page.exists():
         raise ValueError(f"The page for '{institution_name}' does not\
 exist.")
-    # Initialize variables
+
     founder = None
     founded = None
     branches = []
     number_of_employees = None
-    # Extract summary
-    summary = page.summary[:500]  # Limiting summary to 500 characters
-    # Extract information from the page text
+
+    summary = page.summary[:500]  
+
     infobox = page.text.split('\n')
     for line in infobox:
         if 'Founder' in line:
@@ -86,7 +86,7 @@ button = widgets.Button(
     tooltip="Click to fetch institution details",
     icon="search"
 )
-# Set up button click event
+
 button.on_click(on_button_click)
-# Display input box and button
+
 display(text_box, button)
