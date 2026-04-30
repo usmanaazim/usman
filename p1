@@ -1,13 +1,20 @@
+!pip -q install gensim
+
 import gensim.downloader as api
 
 model = api.load("word2vec-google-news-300")
 
-print(model.similarity("king", "queen"))
+word1, word2 = "king", "queen"
+similarity = model.similarity(word1, word2)
+print(f"Similarity between '{word1}' and '{word2}': {similarity:.4f}")
 
-result = model.most_similar(positive=["king","woman"], negative=["man"], topn=1)
-print(f"'king'-'man'+'queen' = {result[0][0]}(similarity:{result[0][1]:.4f})")
-print(result)
+result = model.most_similar(positive=["king", "woman"], negative=["man"], topn=1)
+print(f"'King' - 'Man' + 'Woman' = {result[0][0]} (Similarity: {result[0][1]:.4f})")
 
-print(model.most_similar("Paris", topn=5))
+similar_words = model.most_similar("Paris", topn=5)
+print("Words similar to 'Paris':")
+for word, score in similar_words:
+    print(f"{word}: {score:.4f}")
 
-print(model.doesnt_match(["breakfast","lunch","dinner","banana"]))
+odd_word = model.doesnt_match(["breakfast", "lunch", "dinner", "banana"])
+print(f"Odd one out: {odd_word}")
