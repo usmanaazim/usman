@@ -1,0 +1,44 @@
+! pip install wikipedia-api pydant
+from pydantic import BaseModel
+import wikipediaapi
+class InstitutionDetails(BaseModel):
+founder: str
+founded: str
+branches: str
+employees: str
+summary: str
+wiki = wikipediaapi.Wikipedia(
+user_agent="Lab_Project",
+language="en"
+)
+name = input("Enter Institution Name: ")
+page = wiki.page(name)
+if page.exists():
+text = page.text
+summary = page.summary[:300]
+founder = "N/A"
+founded = "N/A"
+branches = "N/A"
+employees = "N/A
+for line in text.split("\n"):
+if "Founder" in line:
+founder = line.split(":")[-1].strip()
+elif "Founded" in line:
+founded = line.split(":")[-1].strip()
+elif "Branches" in line:
+branches = line.split(":")[-1].strip()
+elif "employees" in line.lower():
+employees = line.split(":")[-1].strip()
+details = InstitutionDetails(
+founder=founder,
+founded=founded,
+branches=branches,
+employees=employees,
+summary=summary
+print("\nFounder:", details.founder)
+print("Founded:", details.founded)
+print("Branches:", details.branches)
+print("Employees:", details.employees)
+print("Summary:", details.summary)
+else:
+print("Page not found")
