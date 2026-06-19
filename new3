@@ -1,0 +1,24 @@
+!pip install gensim nltk matplotlib seaborn scikit-learn -q
+import nltk, numpy as np, matplotlib.pyplot as plt, seaborn as sns
+from nltk.corpus import reuters
+from gensim.models import Word2Vec
+from sklearn.manifold import TSNE
+nltk.download('reuters')
+nltk.download('punkt')
+nltk.download('punkt_tab')
+sentences = [[w.lower() for w in s if w.isalpha()] for s in reuters.sents()[:5000]]
+model = Word2Vec(sentences, vector_size=100, window=5, min_count=2)
+if "disease" in model.wv:
+print(model.wv.most_similar("disease", topn=5))
+words = ["health","disease","doctor","patient","treatment",
+"medicine","virus","surgery","nurse","hospital"]
+vectors = np.array([model.wv[w] for w in words if w in model.wv])
+labels = [w for w in words if w in model.wv]
+points = TSNE(n_components=2, perplexity=3,
+random_state=42).fit_transform(vectors)
+plt.figure(figsize=(8,5))
+sns.scatterplot(x=points[:,0], y=points[:,1])
+for i, w in enumerate(labels):
+plt.annotate(w, (points[i,0], points[i,1]))
+plt.title("Medical Word Embeddings")
+plt.show()
