@@ -15,24 +15,20 @@ Key Points:
 Conclusion:
 {text}
 """)
-
 text = """Artificial Intelligence is transforming healthcare by improving diagnosis and prediction."""
-
 try:
     response = llm.invoke(prompt.format(text=text))
-    print("✅ MODEL OUTPUT:\n")
+    print("MODEL OUTPUT:\n")
     print(response)
 except Exception:
-    print("⚠️ Cohere failed, showing fallback output\n")
+    print("Cohere failed, showing fallback output\n")
     print("""
 Summary:
 Artificial Intelligence is improving healthcare systems.
-
 Key Points:
 - Used in diagnosis
 - Helps prediction
 - Enhances efficiency
-
 Conclusion:
 AI is transforming healthcare significantly.
 """)
